@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation"
 import { AuthGuard } from "@/components/auth-guard"
 import { useAuthStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
+import { useI18n } from "@/lib/i18n"
+import { LanguageSelector } from "@/components/language-selector"
 import { Button } from "@/components/ui/button"
 import {
   FolderOpen,
@@ -17,20 +19,21 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
-const navigation = [
-  { name: "项目", href: "/app/projects", icon: FolderOpen },
-  { name: "积分", href: "/app/credits", icon: Coins },
-  { name: "账户", href: "/app/account", icon: User },
-]
-
-const adminNavigation = [
-  { name: "管理", href: "/app/admin", icon: Settings },
-]
-
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const { user, signOut } = useAuthStore()
+  const { t } = useI18n()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const navigation = [
+    { name: t("projects"), href: "/app/projects", icon: FolderOpen },
+    { name: t("credits"), href: "/app/credits", icon: Coins },
+    { name: t("account"), href: "/app/account", icon: User },
+  ]
+
+  const adminNavigation = [
+    { name: t("admin"), href: "/app/admin", icon: Settings },
+  ]
 
   const isAdmin = user?.role === "admin"
 
@@ -99,7 +102,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <>
                   <div className="pt-4 pb-2">
                     <p className="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      管理员
+                      {t("admin")}
                     </p>
                   </div>
                   {adminNavigation.map((item) => {
@@ -133,7 +136,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {user?.name || "用户"}
+                    {user?.name || t("account")}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                     {user?.email}
@@ -147,7 +150,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 onClick={handleSignOut}
               >
                 <LogOut className="h-4 w-4 mr-2" />
-                退出登录
+                {t("signOut")}
               </Button>
             </div>
           </div>
@@ -174,16 +177,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </header>
 
           {/* Desktop header */}
-          <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <header className="hidden lg:flex items-center justify-between h-16 px-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 z-40 relative">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {/* Page title will be set by individual pages */}
             </h1>
-            <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-              <Coins className="h-5 w-5 text-yellow-500" />
-              <span className="text-sm font-medium">积分余额:</span>
-              <span className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
-                {user?.credits || 0}
-              </span>
+            <div className="flex items-center gap-4">
+              <LanguageSelector />
+              <div className="flex items-center gap-2 px-4 py-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                <Coins className="h-5 w-5 text-yellow-500" />
+                <span className="text-sm font-medium">{t("creditsBalance")}:</span>
+                <span className="text-lg font-bold text-yellow-600 dark:text-yellow-400">
+                  {user?.credits || 0}
+                </span>
+              </div>
             </div>
           </header>
 

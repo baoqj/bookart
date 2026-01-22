@@ -20,13 +20,48 @@ export interface Project {
   language: string
   createdAt: Date
   updatedAt: Date
-  manuscriptStatus: "empty" | "imported" | "parsed"
+  manuscriptStatus: ManuscriptStatus
   paragraphCount: number
+  chapterCount?: number
+}
+
+// Manuscript related types
+export type ManuscriptStatus = "empty" | "imported" | "analyzing" | "chapters" | "parsed"
+
+export type AnalysisStatus = "idle" | "analyzing" | "succeeded" | "failed"
+
+export type FileType = "txt" | "md" | "pdf"
+
+export interface ManuscriptMetadata {
+  id: string
+  projectId: string
+  originalText: string
+  fileType?: FileType
+  fileName?: string
+  totalCharacters: number
+  analysisStatus: AnalysisStatus
+  language: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface Chapter {
+  id: string
+  projectId: string
+  index: number
+  title: string
+  content: string
+  summary?: string
+  paragraphIds: string[]
+  wordCount: number
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface Paragraph {
   id: string
   projectId: string
+  chapterId?: string
   index: number
   content: string
   selected: boolean

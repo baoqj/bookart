@@ -8,6 +8,9 @@ import type {
   IllustrationAsset,
   CreditTransaction,
   IllustrationSettings,
+  Chapter,
+  ManuscriptMetadata,
+  AnalysisStatus,
 } from "./types"
 
 import { mockUser, mockProjects, mockParagraphs, mockTasks, mockAssets, mockTransactions } from "./mock-data"
@@ -189,5 +192,150 @@ export const adminApi = {
 
   async adjustCredits(userId: string, amount: number, reason: string): Promise<void> {
     await delay(400)
+  },
+}
+
+// File API - Handle file uploads and text extraction
+export const fileApi = {
+  async upload(file: File): Promise<{ text: string; fileType: string; fileName: string }> {
+    await delay(800)
+    // This is a mock - actual file parsing is done client-side in lib/pdf.ts
+    return {
+      text: "File content would be extracted here",
+      fileType: file.name.split(".").pop() || "txt",
+      fileName: file.name,
+    }
+  },
+}
+
+// Analysis API - Groq LLM text analysis
+export const analysisApi = {
+  async analyze(
+    projectId: string,
+    text: string,
+    language: string
+  ): Promise<{ chapters: Chapter[]; metadata: ManuscriptMetadata }> {
+    await delay(3000) // Simulate LLM processing time
+
+    // Mock chapter analysis result
+    // In production, this would call lib/groq.ts
+    const mockChapters: Chapter[] = [
+      {
+        id: `chapter-${projectId}-1`,
+        projectId,
+        index: 0,
+        title: "第一章：故事的开始",
+        content: text.slice(0, 1000),
+        summary: "介绍故事的主要背景和角色",
+        paragraphIds: [],
+        wordCount: Math.floor(text.slice(0, 1000).length / 2),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: `chapter-${projectId}-2`,
+        projectId,
+        index: 1,
+        title: "第二章：冲突发展",
+        content: text.slice(1000, 2000),
+        summary: "故事冲突逐渐升级",
+        paragraphIds: [],
+        wordCount: Math.floor(text.slice(1000, 2000).length / 2),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+      {
+        id: `chapter-${projectId}-3`,
+        projectId,
+        index: 2,
+        title: "第三章：高潮与结局",
+        content: text.slice(2000),
+        summary: "故事达到高潮并圆满结束",
+        paragraphIds: [],
+        wordCount: Math.floor(text.slice(2000).length / 2),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ]
+
+    const metadata: ManuscriptMetadata = {
+      id: `metadata-${projectId}`,
+      projectId,
+      originalText: text,
+      totalCharacters: text.length,
+      analysisStatus: "succeeded",
+      language,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+
+    return { chapters: mockChapters, metadata }
+  },
+
+  async getAnalysisStatus(projectId: string): Promise<AnalysisStatus> {
+    await delay(300)
+    return "succeeded"
+  },
+}
+
+// Chapters API - Manage chapters
+export const chaptersApi = {
+  async list(projectId: string): Promise<Chapter[]> {
+    await delay(400)
+    return []
+  },
+
+  async create(projectId: string, data: { title: string; content: string }): Promise<Chapter> {
+    await delay(500)
+    return {
+      id: `chapter-${Date.now()}`,
+      projectId,
+      index: 0,
+      title: data.title,
+      content: data.content,
+      paragraphIds: [],
+      wordCount: data.content.split(/\s+/).length,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+  },
+
+  async update(id: string, data: Partial<Chapter>): Promise<Chapter> {
+    await delay(400)
+    return {
+      id,
+      projectId: "",
+      index: 0,
+      title: data.title || "",
+      content: data.content || "",
+      paragraphIds: [],
+      wordCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      ...data,
+    }
+  },
+
+  async delete(id: string): Promise<void> {
+    await delay(300)
+  },
+
+  async reorder(projectId: string, chapterIds: string[]): Promise<void> {
+    await delay(400)
+  },
+
+  async merge(projectId: string, chapterIds: string[]): Promise<Chapter> {
+    await delay(600)
+    return {
+      id: `chapter-${Date.now()}`,
+      projectId,
+      index: 0,
+      title: "合并章节",
+      content: "合并后的内容",
+      paragraphIds: [],
+      wordCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   },
 }

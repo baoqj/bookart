@@ -1,20 +1,33 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/store"
+import { authApi } from "@/lib/api"
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const { isAuthenticated, isLoading } = useAuthStore()
+  const { isAuthenticated, isLoading, setUser } = useAuthStore()
+  const [initialized, setInitialized] = useState(false)
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    // Initialize user on first mount
+    if (!initialized) {
+      authApi.getCurrentUser().then((user) => {
+        setUser(user)
+        setInitialized(true)
+      })
+    }
+  }, [initialized, setUser])
+
+  useEffect(() => {
+    // Redirect to login if not authenticated and initialization is complete
+    if (initialized && !isLoading && !isAuthenticated) {
       router.push("/auth/sign-in")
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, router, initialized])
 
-  if (isLoading) {
+  if (!initialized || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">

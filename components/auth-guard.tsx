@@ -25,7 +25,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           setUser(user)
         } catch (e) {
           console.error("Failed to restore user:", e)
+          setUser(null)  // 解析失败也要结束加载状态
         }
+      } else {
+        setUser(null)  // 没有保存的用户也要结束加载状态
       }
       setInitialized(true)
     }

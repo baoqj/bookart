@@ -13,8 +13,18 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
   isLoading: true,
-  setUser: (user) => set({ user, isAuthenticated: !!user, isLoading: false }),
-  signOut: () => set({ user: null, isAuthenticated: false }),
+  setUser: (user) => {
+    if (user) {
+      localStorage.setItem("bookart-user", JSON.stringify(user))
+    } else {
+      localStorage.removeItem("bookart-user")
+    }
+    set({ user, isAuthenticated: !!user, isLoading: false })
+  },
+  signOut: () => {
+    localStorage.removeItem("bookart-user")
+    set({ user: null, isAuthenticated: false })
+  },
 }))
 
 interface CreditsState {

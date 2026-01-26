@@ -414,6 +414,16 @@ const translations = {
     successDeleted: "Deleted successfully!",
     successCreated: "Created successfully!",
     successUpdated: "Updated successfully!",
+
+    // Home Page
+    startUsing: "Start Using",
+    coreFeatures: "Core Features",
+    featureAIPowerTitle: "AI Smart Generation",
+    featureAIPowerDesc: "Based on advanced AI models, understand manuscript content and generate illustrations matching the plot and atmosphere",
+    featureStylesTitle: "Multiple Style Choices",
+    featureStylesDesc: "Support watercolor, oil painting, cartoon, realistic and other art styles, meeting different book type needs",
+    featureFastTitle: "Fast & Efficient",
+    featureFastDesc: "Batch generate illustrations, greatly shorten creation cycle, let you focus on content creation",
   },
   fr: {
     // Navigation
@@ -811,6 +821,16 @@ const translations = {
     successDeleted: "Supprimé !",
     successCreated: "Créé !",
     successUpdated: "Mis à jour !",
+
+    // Home Page
+    startUsing: "Commencer",
+    coreFeatures: "Fonctionnalités Principales",
+    featureAIPowerTitle: "Génération IA Intelligente",
+    featureAIPowerDesc: "Basé sur des modèles IA avancés, comprendre le contenu du manuscrit et générer des illustrations adaptées au récit",
+    featureStylesTitle: "Choix de Styles Multiples",
+    featureStylesDesc: "Prend en charge l'aquarelle, la peinture à l'huile, le dessin animé, le réaliste et d'autres styles artistiques",
+    featureFastTitle: "Rapide et Efficace",
+    featureFastDesc: "Génération par lots, réduire considérablement le cycle de création",
   },
   de: {
     // Navigation
@@ -1208,6 +1228,16 @@ const translations = {
     successDeleted: "Gelöscht!",
     successCreated: "Erstellt!",
     successUpdated: "Aktualisiert!",
+
+    // Home Page
+    startUsing: "Loslegen",
+    coreFeatures: "Kernfunktionen",
+    featureAIPowerTitle: "Intelligente KI-Generierung",
+    featureAIPowerDesc: "Basierend auf fortschrittlichen KI-Modellen, Manuskriptinhalte verstehen und passende Illustrationen generieren",
+    featureStylesTitle: "Mehrere Stiloptionen",
+    featureStylesDesc: "Unterstützt Aquarell, Ölgemälde, Cartoon, realistisch und andere Kunststile",
+    featureFastTitle: "Schnell & Effizient",
+    featureFastDesc: "Stapelgenerierung, Verkürzung des Erstellungszyklus",
   },
   es: {
     // Navigation
@@ -1605,6 +1635,16 @@ const translations = {
     successDeleted: "¡Eliminado!",
     successCreated: "¡Creado!",
     successUpdated: "¡Actualizado!",
+
+    // Home Page
+    startUsing: "Comenzar",
+    coreFeatures: "Características Principales",
+    featureAIPowerTitle: "Generación Inteligente IA",
+    featureAIPowerDesc: "Basado en modelos IA avanzados, entender el contenido del manuscrito y generar ilustraciones adaptadas",
+    featureStylesTitle: "Múltiples Opciones de Estilo",
+    featureStylesDesc: "Admite acuarela, óleo, cartoon, realista y otros estilos artísticos",
+    featureFastTitle: "Rápido y Eficiente",
+    featureFastDesc: "Generación por lotes, acortar el ciclo de creación",
   },
   ja: {
     // Navigation
@@ -2002,6 +2042,16 @@ const translations = {
     successDeleted: "削除しました！",
     successCreated: "作成しました！",
     successUpdated: "更新しました！",
+
+    // Home Page
+    startUsing: "始める",
+    coreFeatures: "主な機能",
+    featureAIPowerTitle: "AI スマート生成",
+    featureAIPowerDesc: "高度なAIモデルに基づいて、原稿の内容を理解し、適切なイラストを生成",
+    featureStylesTitle: "複数のスタイル選択肢",
+    featureStylesDesc: "水彩、油絵、卡通、リアルなど多様なアートスタイルに対応",
+    featureFastTitle: "高速＆効率的",
+    featureFastDesc: "一括生成で、制作サイクルを大幅に短縮",
   },
   ko: {
     // Navigation
@@ -2399,6 +2449,16 @@ const translations = {
     successDeleted: "삭제되었습니다!",
     successCreated: "생성되었습니다!",
     successUpdated: "업데이트되었습니다!",
+
+    // Home Page
+    startUsing: "시작하기",
+    coreFeatures: "주요 기능",
+    featureAIPowerTitle: "AI 스마트 생성",
+    featureAIPowerDesc: "고급 AI 모델 기반으로 원고 내용을 이해하고 적절한 일러스트 생성",
+    featureStylesTitle: "다양한 스타일 선택",
+    featureStylesDesc: "수채화, 유화, 만화, 리얼 등 다양한 아트 스타일 지원",
+    featureFastTitle: "빠르고 효율적",
+    featureFastDesc: "일괄 생성으로 제작 사이클 대폭 단축",
   },
   "zh-CN": {
     // Navigation
@@ -2796,6 +2856,16 @@ const translations = {
     successDeleted: "删除成功！",
     successCreated: "创建成功！",
     successUpdated: "更新成功！",
+
+    // Home Page
+    startUsing: "开始使用",
+    coreFeatures: "核心特性",
+    featureAIPowerTitle: "AI 智能生成",
+    featureAIPowerDesc: "基于先进的 AI 模型，理解书稿内容，生成符合情节和氛围的插图",
+    featureStylesTitle: "多种风格选择",
+    featureStylesDesc: "支持水彩、油画、卡通、写实等多种艺术风格，满足不同书籍类型需求",
+    featureFastTitle: "快速高效",
+    featureFastDesc: "批量生成插图，大幅缩短创作周期，让您专注于内容创作",
   },
   "zh-TW": {
     // Navigation
@@ -3193,6 +3263,16 @@ const translations = {
     successDeleted: "刪除成功！",
     successCreated: "創建成功！",
     successUpdated: "更新成功！",
+
+    // Home Page
+    startUsing: "開始使用",
+    coreFeatures: "核心功能",
+    featureAIPowerTitle: "AI 智能生成",
+    featureAIPowerDesc: "基於先進的 AI 模型，理解書稿內容，生成符合情節和氛圍的插圖",
+    featureStylesTitle: "多種風格選擇",
+    featureStylesDesc: "支持水彩、油畫、卡通、寫實等多種藝術風格，滿足不同書籍類型需求",
+    featureFastTitle: "快速高效",
+    featureFastDesc: "批量生成插圖，大幅縮短創作週期，讓您專注於內容創作",
   },
 }
 

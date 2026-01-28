@@ -15,6 +15,7 @@ import {
   Lightbulb
 } from "lucide-react"
 import { useAuthStore } from "@/lib/store"
+import { useI18n } from "@/lib/i18n"
 
 // 模拟积分使用数据
 const mockTransactions = [
@@ -112,34 +113,8 @@ const pricingPlans: PricingPlan[] = [
   }
 ]
 
-// 使用固定标签避免类型错误
-const labels = {
-  creativeEnergy: "Your Creative Energy",
-  keepStorytelling: "Keep your storytelling journey alive with more credits.",
-  getExtraCredits: "Get Extra Credits",
-  creditUsage: "Credit Usage",
-  leftToUse: "Left to use",
-  monthlyGoal: "Monthly Goal",
-  resetsIn: "Resets In",
-  days: "Days",
-  recentActivity: "Recent Activity",
-  fullStatement: "Full Statement",
-  action: "Action",
-  credits: "Credits",
-  date: "Date",
-  status: "Status",
-  pickYourAdventure: "Pick Your Adventure",
-  pricingSubtitle: "Whether you're writing your first story or building a library, we have a plan for you.",
-  bestValue: "Best Value",
-  currentPlan: "Current Active Plan",
-  upgradeToPlus: "Upgrade to Plus",
-  goPro: "Go Pro",
-  didYouKnow: "Did you know?",
-  creditRollover: "Pro users can roll over up to 10k unused credits to next month. Keep the momentum going!",
-  howCreditsWork: "How credits work?"
-}
-
 export default function CreditsPage() {
+  const { t } = useI18n()
   const { user } = useAuthStore()
   const [currentPlan, setCurrentPlan] = useState("Storyteller")
 
@@ -155,15 +130,15 @@ export default function CreditsPage() {
           <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6">
             <div className="text-center md:text-left">
               <h1 className="text-4xl font-bold text-gray-800 tracking-tight">
-                {labels.creativeEnergy}
+                {t("creativeEnergy")}
               </h1>
               <p className="text-gray-500 text-lg mt-2">
-                {labels.keepStorytelling}
+                {t("keepStorytelling")}
               </p>
             </div>
             <Button className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-orange-200 flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
-              {labels.getExtraCredits}
+              {t("getExtraCredits")}
             </Button>
           </div>
         </div>
@@ -177,7 +152,7 @@ export default function CreditsPage() {
             <CardContent className="p-8">
               <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
                 <Star className="h-5 w-5 text-teal-500" />
-                {labels.creditUsage}
+                {t("creditUsage")}
               </h2>
 
               <div className="relative flex items-center justify-center mb-8">
@@ -206,18 +181,18 @@ export default function CreditsPage() {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-5xl font-bold text-gray-800">{totalCredits}</span>
-                  <span className="text-sm text-gray-400 font-bold uppercase tracking-wider">{labels.leftToUse}</span>
+                  <span className="text-sm text-gray-400 font-bold uppercase tracking-wider">{t("leftToUse")}</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-teal-50 p-4 rounded-xl text-center">
-                  <p className="text-[10px] uppercase font-bold text-teal-600 mb-1">{labels.monthlyGoal}</p>
+                  <p className="text-[10px] uppercase font-bold text-teal-600 mb-1">{t("monthlyGoal")}</p>
                   <p className="text-2xl font-bold text-teal-600">{monthlyGoal.toLocaleString()}</p>
                 </div>
                 <div className="bg-amber-50 p-4 rounded-xl text-center">
-                  <p className="text-[10px] uppercase font-bold text-amber-600 mb-1">{labels.resetsIn}</p>
-                  <p className="text-2xl font-bold text-amber-600">12 {labels.days}</p>
+                  <p className="text-[10px] uppercase font-bold text-amber-600 mb-1">{t("resetsIn")}</p>
+                  <p className="text-2xl font-bold text-amber-600">12 {t("days")}</p>
                 </div>
               </div>
             </CardContent>
@@ -228,10 +203,10 @@ export default function CreditsPage() {
             <div className="p-6 border-b border-orange-50 flex justify-between items-center">
               <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
                 <History className="h-5 w-5 text-orange-500" />
-                {labels.recentActivity}
+                {t("recentActivity")}
               </h2>
               <Button variant="ghost" className="text-orange-500 text-sm font-bold flex items-center gap-1 hover:bg-orange-50">
-                {labels.fullStatement} <ArrowRight className="h-4 w-4" />
+                {t("fullStatement")} <ArrowRight className="h-4 w-4" />
               </Button>
             </div>
 
@@ -239,10 +214,10 @@ export default function CreditsPage() {
               <table className="w-full text-left">
                 <thead className="bg-orange-50/30">
                   <tr>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">{labels.action}</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">{labels.credits}</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">{labels.date}</th>
-                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">{labels.status}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">{t("action")}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">{t("credits")}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">{t("date")}</th>
+                    <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">{t("status")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-orange-50">
@@ -280,9 +255,9 @@ export default function CreditsPage() {
         {/* 定价计划 */}
         <div className="mb-16">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-3">{labels.pickYourAdventure}</h2>
+            <h2 className="text-4xl font-bold text-gray-800 mb-3">{t("pickYourAdventure")}</h2>
             <p className="text-gray-500 font-medium max-w-lg mx-auto">
-              {labels.pricingSubtitle}
+              {t("pricingSubtitle")}
             </p>
           </div>
 
@@ -298,7 +273,7 @@ export default function CreditsPage() {
               >
                 {plan.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[12px] font-black px-6 py-2 rounded-full uppercase tracking-widest shadow-lg">
-                    {labels.bestValue}
+                    {t("bestValue")}
                   </div>
                 )}
 
@@ -344,10 +319,10 @@ export default function CreditsPage() {
                   disabled={plan.current}
                 >
                   {plan.current
-                    ? labels.currentPlan
+                    ? t("currentActivePlan")
                     : plan.popular
-                      ? labels.upgradeToPlus
-                      : labels.goPro
+                      ? t("upgradeToPlus")
+                      : t("goPro")
                   }
                 </Button>
               </Card>
@@ -362,14 +337,14 @@ export default function CreditsPage() {
               <Lightbulb className="h-7 w-7 text-teal-500" />
             </div>
             <div>
-              <h4 className="font-bold text-gray-800">{labels.didYouKnow}</h4>
+              <h4 className="font-bold text-gray-800">{t("didYouKnow")}</h4>
               <p className="text-sm text-gray-500 font-medium">
-                {labels.creditRollover}
+                {t("creditRollover")}
               </p>
             </div>
           </div>
           <Button variant="outline" className="px-6 py-3 bg-white text-teal-600 font-bold text-sm rounded-xl border-2 border-teal-200 hover:bg-teal-50 whitespace-nowrap">
-            {labels.howCreditsWork}
+            {t("howCreditsWork")}
           </Button>
         </Card>
       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
+import { Toaster } from "sonner"
 import "./globals.css"
 import { I18nProvider } from "@/lib/i18n"
 import { AppHeader } from "@/components/app-header"
@@ -30,6 +31,7 @@ export default function RootLayout({
         <I18nProvider>
           <AppHeader />
           <main className="min-h-[calc(100vh-64px)]">{children}</main>
+          <Toaster position="top-center" richColors />
         </I18nProvider>
       </body>
     </html>

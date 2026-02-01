@@ -272,3 +272,95 @@ export interface BatchJobItem {
   createdAt: Date
   updatedAt: Date
 }
+
+// ==================== LLM SETTINGS FOR v0.1.1 ====================
+
+// LLM Provider types
+export type LlmProvider = "openai" | "anthropic" | "groq" | "custom"
+
+// LLM Settings stored per user
+export interface LlmSettings {
+  id: string
+  userId: string
+  provider: LlmProvider
+  // Custom API settings
+  apiUrl?: string           // 自定义 API 地址
+  apiKey?: string           // API Key (加密存储)
+  // Model settings
+  model?: string            // 模型名称
+  temperature?: number      // 生成温度 0-1
+  maxTokens?: number        // 最大 token 数
+  // Features enabled
+  enabledFeatures: {
+    characterExtraction: boolean  // 角色提取
+    chapterSplit: boolean         // 章节切分
+    sceneSplit: boolean           // 场景切分
+    promptGeneration: boolean     // Prompt 生成
+  }
+  // Status
+  isValid: boolean          // 配置是否有效
+  lastTestAt?: Date
+  errorMessage?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+// Common LLM models per provider
+export const LLM_MODELS: Record<LlmProvider, string[]> = {
+  openai: ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-3.5-turbo"],
+  anthropic: ["claude-sonnet-4-20250514", "claude-haiku-3-20250508", "claude-opus-4-20250514"],
+  groq: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant", "mixtral-8x7b-32768"],
+  custom: ["custom-model"]
+}
+
+// Default settings for each provider
+export const DEFAULT_LLM_SETTINGS: Record<LlmProvider, Partial<LlmSettings>> = {
+  openai: {
+    provider: "openai",
+    model: "gpt-4o-mini",
+    temperature: 0.7,
+    maxTokens: 4096,
+    enabledFeatures: {
+      characterExtraction: true,
+      chapterSplit: true,
+      sceneSplit: true,
+      promptGeneration: true
+    }
+  },
+  anthropic: {
+    provider: "anthropic",
+    model: "claude-haiku-3-20250508",
+    temperature: 0.7,
+    maxTokens: 4096,
+    enabledFeatures: {
+      characterExtraction: true,
+      chapterSplit: true,
+      sceneSplit: true,
+      promptGeneration: true
+    }
+  },
+  groq: {
+    provider: "groq",
+    model: "llama-3.3-70b-versatile",
+    temperature: 0.7,
+    maxTokens: 4096,
+    enabledFeatures: {
+      characterExtraction: true,
+      chapterSplit: true,
+      sceneSplit: true,
+      promptGeneration: true
+    }
+  },
+  custom: {
+    provider: "custom",
+    model: "",
+    temperature: 0.7,
+    maxTokens: 4096,
+    enabledFeatures: {
+      characterExtraction: true,
+      chapterSplit: true,
+      sceneSplit: true,
+      promptGeneration: true
+    }
+  }
+}

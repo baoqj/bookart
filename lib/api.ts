@@ -18,6 +18,8 @@ import type {
   BatchJobItem,
   SceneCharacter,
   ArtStylePreset,
+  LlmSettings,
+  LlmProvider,
 } from "./types"
 
 import { mockUser, mockProjects, mockParagraphs, mockTasks, mockAssets, mockTransactions } from "./mock-data"
@@ -743,6 +745,92 @@ export const batchJobsApi = {
     options: { imagesPerScene?: number }
   ): Promise<BatchJob> {
     return this.create(projectId, userId, "full_book", options)
+  },
+}
+
+// ==================== LLM SETTINGS API ====================
+
+// In-memory mock storage for LLM settings
+const createLlmSettingsStore = () => {
+  let mockSettings: LlmSettings[] = []
+  return {
+    getByUser: (userId: string): LlmSettings | null =>
+      mockSettings.find((s) => s.userId === userId) || null,
+    get: (id: string): LlmSettings | null =>
+      mockSettings.find((s) => s.id === id) || null,
+    set: (settings: LlmSettings) => {
+      const index = mockSettings.findIndex((s) => s.userId === settings.userId)
+      if (index !== -1) {
+        mockSettings[index] = settings
+      } else {
+        mockSettings.push(settings)
+      }
+    },
+    delete: (userId: string) => {
+      mockSettings = mockSettings.filter((s) => s.userId !== userId)
+    },
+  }
+}
+
+const llmSettingsStore = createLlmSettingsStore()
+
+// LLM Settings API
+export const llmSettingsApi = {
+  // Get user's LLM settings
+  async get(userId: string): Promise<LlmSettings | null> {
+    await delay(200)
+    return llmSettingsStore.getByUser(userId)
+  },
+
+  // Create or update LLM settings
+  async save(
+    userId: string,
+    data: Omit<LlmSettings, "id" | "userId" | "createdAt" | "updatedAt" | "isValid" | "errorMessage" | "lastTestAt">
+  ): Promise<LlmSettings> {
+    await delay(400)
+    const settings: LlmSettings = {
+      ...data,
+      id: `llm-${Date.now()}`,
+      userId,
+      isValid: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    llmSettingsStore.set(settings)
+    return settings
+  },
+
+  // Test LLM connection
+  async test(
+    userId: string,
+    provider: LlmProvider,
+    apiUrl?: string,
+    apiKey?: string,
+    model?: string
+  ): Promise<{ success: boolean; message: string }> {
+    await delay(2000) // Simulate API test
+
+    // Mock validation
+    if (!apiKey) {
+      return { success: false, message: "API Key 不能为空" }
+    }
+
+    if (apiKey.length < 10) {
+      return { success: false, message: "API Key 格式不正确" }
+    }
+
+    // Simulate different provider responses
+    if (provider === "custom" && !apiUrl) {
+      return { success: false, message: "自定义 API 地址不能为空" }
+    }
+
+    return { success: true, message: "连接测试成功！" }
+  },
+
+  // Delete LLM settings
+  async delete(userId: string): Promise<void> {
+    await delay(300)
+    llmSettingsStore.delete(userId)
   },
 }
 

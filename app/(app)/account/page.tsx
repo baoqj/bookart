@@ -12,12 +12,14 @@ import {
   CreditCard,
   Key,
   Plus,
-  Check
+  Check,
+  Cpu
 } from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 import { useAuthStore } from "@/lib/store"
+import { LlmSettingsForm } from "@/components/llm/llm-settings"
 
-type SettingsTab = "profile" | "preferences" | "generation" | "notifications" | "billing"
+type SettingsTab = "profile" | "preferences" | "generation" | "notifications" | "billing" | "llm"
 
 const stylePresets = [
   { id: "watercolor", name: "Watercolor", icon: "palette", color: "bg-blue-100 text-blue-500" },
@@ -51,6 +53,7 @@ export default function AccountPage() {
     generation: "Generation Defaults",
     notifications: "Notifications",
     billing: "Billing & Plans",
+    llm: "AI Model Settings",
     systemSettings: "System Settings",
     settingsSubtitle: "Customize your creative environment and profile.",
     settings: "Settings",
@@ -97,7 +100,8 @@ export default function AccountPage() {
     { id: "preferences" as const, label: labels.preferences, icon: Settings },
     { id: "generation" as const, label: labels.generation, icon: Palette },
     { id: "notifications" as const, label: labels.notifications, icon: Bell },
-    { id: "billing" as const, label: labels.billing, icon: CreditCard }
+    { id: "billing" as const, label: labels.billing, icon: CreditCard },
+    { id: "llm" as const, label: labels.llm, icon: Cpu }
   ]
 
   return (
@@ -360,6 +364,22 @@ export default function AccountPage() {
                       <Button variant="outline" className="rounded-xl">{labels.changePlan}</Button>
                     </div>
                   </Card>
+                </section>
+              </div>
+            )}
+
+            {/* LLM 模型设置 */}
+            {activeTab === "llm" && (
+              <div className="space-y-8">
+                <section>
+                  <div className="mb-8">
+                    <h3 className="text-2xl font-bold text-gray-900">AI 模型设置</h3>
+                    <p className="text-gray-500 mt-1 font-medium">
+                      配置用于文本分析的 AI 模型服务，支持 OpenAI、Anthropic、Groq 和自定义 API
+                    </p>
+                  </div>
+
+                  <LlmSettingsForm userId={user?.id || "user-1"} />
                 </section>
               </div>
             )}

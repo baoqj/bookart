@@ -53,6 +53,7 @@ export default function NewProjectPage() {
         title: title.trim(),
         description: description.trim(),
         language,
+        stylePresetKey: "children-story", // 默认风格
       })
 
       // 2. 导入书稿文本

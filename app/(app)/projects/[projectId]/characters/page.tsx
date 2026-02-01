@@ -12,11 +12,13 @@ import { useI18n } from "@/lib/i18n"
 import { charactersApi, imagesApi, projectsApi } from "@/lib/api"
 import type { Character, CharacterRole, Project } from "@/lib/types"
 import { toast } from "sonner"
+import { useAuthStore } from "@/lib/store"
 
 export default function CharactersPage() {
   const { t } = useI18n()
   const params = useParams()
   const projectId = params.projectId as string
+  const { user } = useAuthStore()
 
   const [project, setProject] = useState<Project | null>(null)
   const [characters, setCharacters] = useState<Character[]>([])
@@ -92,8 +94,13 @@ export default function CharactersPage() {
         setCharacters(prev => prev.map(c => c.id === updated.id ? updated : c))
         toast.success("角色已更新")
       } else {
-        // Create new
-        const newCharacter = await charactersApi.create(projectId, data)
+        // Create new - add required fields
+        const characterData = {
+          ...data,
+          userId: user?.id || "user-1",
+          isMain: data.role === "protagonist",
+        }
+        const newCharacter = await charactersApi.create(projectId, characterData)
         setCharacters(prev => [...prev, newCharacter])
         toast.success("角色已创建")
       }

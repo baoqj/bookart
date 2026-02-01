@@ -14,6 +14,7 @@ interface FileUploadProps {
   maxSizeMB?: number
   accept?: string
   className?: string
+  disabled?: boolean
 }
 
 export function FileUpload({
@@ -21,6 +22,7 @@ export function FileUpload({
   maxSizeMB = 10,
   accept = getFileAccept(),
   className,
+  disabled = false,
 }: FileUploadProps) {
   const { t } = useI18n()
   const [dragActive, setDragActive] = useState(false)
@@ -29,7 +31,9 @@ export function FileUpload({
   const [error, setError] = useState<string | null>(null)
   const [parsedFile, setParsedFile] = useState<FileParseResult | null>(null)
 
+  // Disable interaction when disabled
   const handleDrag = useCallback((e: React.DragEvent) => {
+    if (disabled) return
     e.preventDefault()
     e.stopPropagation()
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -37,7 +41,7 @@ export function FileUpload({
     } else if (e.type === "dragleave") {
       setDragActive(false)
     }
-  }, [])
+  }, [disabled])
 
   const processFile = async (file: File) => {
     // 验证文件类型
@@ -77,6 +81,7 @@ export function FileUpload({
 
   const handleDrop = useCallback(
     (e: React.DragEvent) => {
+      if (disabled) return
       e.preventDefault()
       e.stopPropagation()
       setDragActive(false)
@@ -85,16 +90,17 @@ export function FileUpload({
         processFile(e.dataTransfer.files[0])
       }
     },
-    [onFileParsed, t, maxSizeMB]
+    [onFileParsed, t, maxSizeMB, disabled]
   )
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (disabled) return
       if (e.target.files && e.target.files[0]) {
         processFile(e.target.files[0])
       }
     },
-    [onFileParsed, t, maxSizeMB]
+    [onFileParsed, t, maxSizeMB, disabled]
   )
 
   const handleRemove = () => {
@@ -144,7 +150,8 @@ export function FileUpload({
         className={cn(
           "border-2 border-dashed transition-colors",
           dragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25",
-          error && "border-destructive"
+          error && "border-destructive",
+          disabled && "opacity-50 cursor-not-allowed"
         )}
       >
         <CardContent className="flex flex-col items-center justify-center py-8 px-4">
@@ -156,7 +163,7 @@ export function FileUpload({
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
-            disabled={uploading}
+            disabled={disabled || uploading}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
 

@@ -424,20 +424,24 @@ export const charactersApi = {
       {
         id: `char-${Date.now()}-1`,
         projectId,
+        userId: "user-1",
         name: "主角",
         role: "protagonist",
         description: "勇敢的年轻人，有着善良的心和坚定的意志",
         appearancePrompt: "young protagonist, brave expression, heroic stance, clean clothes",
+        isMain: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
         id: `char-${Date.now()}-2`,
         projectId,
+        userId: "user-1",
         name: "配角",
         role: "supporting",
         description: "智慧的导师角色",
         appearancePrompt: "wise mentor figure, glasses, old robes, kind eyes",
+        isMain: false,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
@@ -854,4 +858,482 @@ function getStylePrompt(style: ArtStylePreset): string {
     culture: "cultural illustration, traditional elements, heritage style, symbolic",
   }
   return stylePrompts[style] || stylePrompts["children-story"]
+}
+
+// ==================== AUTO-WORKFLOW API ====================
+
+import type {
+  CharacterExtractionResult,
+  ChapterSplitResult,
+  SceneSplitResult,
+  SceneCharacterMapping,
+  AutoWorkflowStatus,
+  CharacterDetail,
+  CharacterAttributes,
+} from "./types"
+
+// Auto-workflow state store (in-memory for demo)
+const autoWorkflowStore = new Map<string, AutoWorkflowStatus>()
+const characterStore = new Map<string, CharacterDetail[]>()
+const chapterStore = new Map<string, Chapter[]>()
+const sceneStore = new Map<string, Scene[]>()
+const sceneCharacterStore = new Map<string, SceneCharacterMapping[]>()
+
+// Generate unique ID
+function generateId(): string {
+  return Math.random().toString(36).substring(2, 15)
+}
+
+// Mock LLM character extraction
+async function mockExtractCharacters(text: string, style: ArtStylePreset): Promise<CharacterExtractionResult[]> {
+  await delay(3000) // Simulate LLM processing
+
+  // Mock extracted characters based on text analysis
+  const mockCharacters: CharacterExtractionResult[] = [
+    {
+      name: "小明",
+      role: "protagonist",
+      confidence: 0.95,
+      attributes: {
+        gender: "男",
+        age: "10岁",
+        identity: "小学生",
+        personality: "勇敢、好奇、善良",
+        appearance: "圆脸，大眼睛，黑短发，瘦瘦高高",
+        clothing: "蓝色校服，红领巾",
+        language: "活泼天真，喜欢问问题",
+        habits: "喜欢探索新事物，经常走神",
+        abilities: "想象力丰富",
+        background: "住在山脚下的村庄，是家中最小的孩子",
+      },
+      appearancePrompt: "A 10-year-old Chinese boy with round face, big eyes, short black hair, slim and tall stature, wearing blue school uniform with red scarf, innocent and curious expression, children's book illustration style",
+      stylePrompt: getStylePrompt(style),
+      sourceExcerpts: ["小明走在山间小路上，好奇地四处张望。", "小明决定踏上冒险之旅。"],
+    },
+    {
+      name: "老爷爷",
+      role: "mentor",
+      confidence: 0.88,
+      attributes: {
+        gender: "男",
+        age: "70岁",
+        identity: "隐居的山中老人",
+        personality: "智慧、慈祥、神秘",
+        appearance: "白发苍苍，长眉毛，戴斗笠，穿灰色长袍",
+        clothing: "灰色布衣，草鞋",
+        language: "缓慢低沉，善用比喻",
+        habits: "喜欢下棋，喝茶",
+        abilities: "了解山中所有的秘密",
+        background: "曾是村中的老师傅，年轻时游历四方",
+      },
+      appearancePrompt: "An elderly Chinese man with white hair, long eyebrows, wearing a straw hat and gray robe, kind wise expression, mountain hermit appearance, children's book illustration style",
+      stylePrompt: getStylePrompt(style),
+      sourceExcerpts: ["老爷爷住在山上的小屋里。", "老爷爷告诉小明山的那边有一片魔法森林。"],
+    },
+    {
+      name: "小精灵",
+      role: "supporting",
+      confidence: 0.82,
+      attributes: {
+        gender: "无",
+        age: "不详",
+        identity: "森林守护者",
+        personality: "调皮、友好、害羞",
+        appearance: "透明发光的身体，戴着花环，背上有小翅膀",
+        clothing: "用树叶做的小裙子",
+        language: "声音像银铃，喜欢用歌声代替说话",
+        habits: "在花丛中跳舞",
+        abilities: "能让植物发光",
+        background: "诞生于第一缕晨光，是森林的守护灵",
+      },
+      appearancePrompt: "A tiny forest spirit with translucent glowing body, wearing a flower crown, small wings on back, sparkling with magical light, children's book illustration style",
+      stylePrompt: getStylePrompt(style),
+      sourceExcerpts: ["小精灵从花丛中飞了出来。", "小精灵带小明找到了回家的路。"],
+    },
+  ]
+
+  return mockCharacters
+}
+
+// Mock LLM chapter splitting
+async function mockSplitChapters(text: string): Promise<ChapterSplitResult[]> {
+  await delay(2000)
+
+  // Simple mock: split by double newlines for demo
+  const chapters: ChapterSplitResult[] = [
+    {
+      title: "第一章：神秘的邀请",
+      content: text.substring(0, 500),
+      summary: "小明收到了一封神秘的信，邀请他踏上冒险之旅。",
+      wordCount: 120,
+    },
+    {
+      title: "第二章：遇见老爷爷",
+      content: text.substring(500, 1000),
+      summary: "在山脚下，小明遇到了一位神秘的老爷爷。",
+      wordCount: 150,
+    },
+    {
+      title: "第三章：森林中的小精灵",
+      content: text.substring(1000, 1500),
+      summary: "小明在魔法森林里遇到了善良的小精灵。",
+      wordCount: 130,
+    },
+    {
+      title: "第四章：勇敢的抉择",
+      content: text.substring(1500, 2000),
+      summary: "面对困难的选择，小明展现出了勇气。",
+      wordCount: 140,
+    },
+    {
+      title: "第五章：回到家乡",
+      content: text.substring(2000, 2500),
+      summary: "冒险结束，小明带着成长回到了家乡。",
+      wordCount: 160,
+    },
+  ]
+
+  return chapters
+}
+
+// Mock LLM scene splitting
+async function mockSplitScenes(chapterContent: string, chapterIndex: number): Promise<SceneSplitResult[]> {
+  await delay(1500)
+
+  // Mock scenes based on chapter
+  const scenesPerChapter = 3
+  const scenes: SceneSplitResult[] = []
+
+  for (let i = 0; i < scenesPerChapter; i++) {
+    const sceneIndex = chapterIndex * 3 + i
+    const charactersInScene = []
+
+    if (sceneIndex === 0 || sceneIndex === 3 || sceneIndex === 6 || sceneIndex === 9 || sceneIndex === 12) {
+      charactersInScene.push("小明")
+    }
+    if (sceneIndex === 3 || sceneIndex === 4) {
+      charactersInScene.push("老爷爷")
+    }
+    if (sceneIndex === 6 || sceneIndex === 7 || sceneIndex === 8) {
+      charactersInScene.push("小精灵")
+    }
+
+    scenes.push({
+      title: `场景 ${i + 1}`,
+      excerpt: chapterContent.substring(i * 150, (i + 1) * 150),
+      characters: charactersInScene,
+      promptDraft: `A children's book illustration showing ${charactersInScene.join(" and ") || "a mystical scene"} in a magical forest setting, ${getStylePrompt("children-story")}`,
+    })
+  }
+
+  return scenes
+}
+
+export const autoWorkflowApi = {
+  // Start auto-workflow for a project
+  async start(
+    projectId: string,
+    userId: string,
+    text: string,
+    stylePreset: ArtStylePreset = "children-story"
+  ): Promise<AutoWorkflowStatus> {
+    await delay(500)
+
+    const status: AutoWorkflowStatus = {
+      id: generateId(),
+      projectId,
+      currentStep: "extracting_characters",
+      progress: 0,
+      stepProgress: 0,
+      totalCharacters: 0,
+      processedCharacters: 0,
+      totalChapters: 0,
+      processedChapters: 0,
+      totalScenes: 0,
+      processedScenes: 0,
+      characterLinksCreated: 0,
+      startedAt: new Date(),
+      updatedAt: new Date(),
+    }
+
+    autoWorkflowStore.set(projectId, status)
+
+    // Simulate async workflow execution
+    this.executeWorkflow(projectId, userId, text, stylePreset)
+
+    return status
+  },
+
+  // Execute the full workflow (simulated)
+  async executeWorkflow(
+    projectId: string,
+    userId: string,
+    text: string,
+    stylePreset: ArtStylePreset
+  ): Promise<void> {
+    const status = autoWorkflowStore.get(projectId)
+    if (!status) return
+
+    try {
+      // Step 1: Extract characters
+      status.currentStep = "extracting_characters"
+      status.stepProgress = 0
+      status.updatedAt = new Date()
+
+      const characters = await mockExtractCharacters(text, stylePreset)
+      status.totalCharacters = characters.length
+      status.processedCharacters = characters.length
+      status.stepProgress = 100
+      status.progress = 15
+      status.updatedAt = new Date()
+
+      // Store character details
+      const characterDetails: CharacterDetail[] = characters.map((c) => ({
+        id: generateId(),
+        projectId,
+        userId,
+        name: c.name,
+        role: c.role,
+        description: `${c.attributes.identity || ""} - ${c.attributes.personality || ""}`,
+        avatar: "",
+        isMain: c.role === "protagonist",
+        attributes: c.attributes,
+        appearancePrompt: c.appearancePrompt,
+        stylePrompt: c.stylePrompt,
+        sceneIds: [],
+        confidence: c.confidence,
+        sourceExcerpts: c.sourceExcerpts,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }))
+      characterStore.set(projectId, characterDetails)
+
+      await delay(1000)
+
+      // Step 2: Split chapters
+      status.currentStep = "splitting_chapters"
+      status.stepProgress = 0
+      status.updatedAt = new Date()
+
+      const chapterResults = await mockSplitChapters(text)
+      status.totalChapters = chapterResults.length
+      status.processedChapters = 0
+      status.stepProgress = 50
+      status.progress = 35
+      status.updatedAt = new Date()
+
+      // Store chapters
+      const chapters: Chapter[] = chapterResults.map((r, idx) => ({
+        id: generateId(),
+        projectId,
+        index: idx,
+        orderIndex: idx,
+        title: r.title,
+        content: r.content,
+        summary: r.summary,
+        paragraphIds: [],
+        wordCount: r.wordCount,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }))
+      chapterStore.set(projectId, chapters)
+
+      status.processedChapters = chapterResults.length
+      status.stepProgress = 100
+      status.progress = 50
+      status.updatedAt = new Date()
+
+      await delay(1000)
+
+      // Step 3: Split scenes
+      status.currentStep = "splitting_scenes"
+      status.stepProgress = 0
+      status.totalScenes = chapters.length * 3
+      status.processedScenes = 0
+      status.updatedAt = new Date()
+
+      const allScenes: Scene[] = []
+      const allMappings: SceneCharacterMapping[] = []
+
+      for (let i = 0; i < chapters.length; i++) {
+        const chapter = chapters[i]
+        const sceneResults = await mockSplitScenes(chapter.content, i)
+
+        for (let j = 0; j < sceneResults.length; j++) {
+          const sceneResult = sceneResults[j]
+          const sceneId = generateId()
+
+          allScenes.push({
+            id: sceneId,
+            projectId,
+            chapterId: chapter.id,
+            orderIndex: j,
+            title: sceneResult.title,
+            excerpt: sceneResult.excerpt,
+            promptDraft: sceneResult.promptDraft,
+            promptFinal: sceneResult.promptDraft,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+
+          // Create character mappings
+          const characterDetails = characterStore.get(projectId) || []
+          const sceneCharacterIds = characterDetails
+            .filter((c) => sceneResult.characters.includes(c.name))
+            .map((c) => c.id)
+
+          if (sceneCharacterIds.length > 0) {
+            allMappings.push({
+              sceneId,
+              sceneTitle: sceneResult.title,
+              characterIds: sceneCharacterIds,
+              confidence: 0.85,
+              reason: `角色 ${sceneResult.characters.join(", ")} 在场景中被提及`,
+            })
+          }
+
+          status.processedScenes++
+          status.stepProgress = Math.round((status.processedScenes / status.totalScenes) * 100)
+          status.progress = 50 + Math.round((status.processedScenes / status.totalScenes) * 25)
+          status.updatedAt = new Date()
+
+          await delay(200) // Stagger to show progress
+        }
+      }
+
+      sceneStore.set(projectId, allScenes)
+      sceneCharacterStore.set(projectId, allMappings)
+      status.characterLinksCreated = allMappings.length
+      status.stepProgress = 100
+      status.progress = 85
+      status.updatedAt = new Date()
+
+      await delay(1000)
+
+      // Step 4: Generate prompts
+      status.currentStep = "generating_prompts"
+      status.stepProgress = 0
+      status.updatedAt = new Date()
+
+      // Update scenes with final prompts
+      const finalScenes = sceneStore.get(projectId) || []
+      for (const scene of finalScenes) {
+        scene.promptFinal = scene.promptDraft
+        scene.updatedAt = new Date()
+      }
+      sceneStore.set(projectId, finalScenes)
+
+      status.stepProgress = 100
+      status.progress = 100
+      status.updatedAt = new Date()
+
+      // Complete
+      status.currentStep = "completed"
+      status.completedAt = new Date()
+      status.updatedAt = new Date()
+
+    } catch (error) {
+      console.error("Auto-workflow error:", error)
+      status.currentStep = "failed"
+      status.errorMessage = error instanceof Error ? error.message : "未知错误"
+      status.updatedAt = new Date()
+    }
+  },
+
+  // Get workflow status
+  async getStatus(projectId: string): Promise<AutoWorkflowStatus | null> {
+    await delay(300)
+    return autoWorkflowStore.get(projectId) || null
+  },
+
+  // Get extracted characters
+  async getCharacters(projectId: string): Promise<CharacterDetail[]> {
+    await delay(300)
+    return characterStore.get(projectId) || []
+  },
+
+  // Get chapters
+  async getChapters(projectId: string): Promise<Chapter[]> {
+    await delay(300)
+    return chapterStore.get(projectId) || []
+  },
+
+  // Get scenes
+  async getScenes(projectId: string): Promise<Scene[]> {
+    await delay(300)
+    return sceneStore.get(projectId) || []
+  },
+
+  // Get scene-character mappings
+  async getSceneCharacterMappings(projectId: string): Promise<SceneCharacterMapping[]> {
+    await delay(300)
+    return sceneCharacterStore.get(projectId) || []
+  },
+
+  // Update character
+  async updateCharacter(
+    projectId: string,
+    characterId: string,
+    updates: Partial<CharacterDetail>
+  ): Promise<CharacterDetail | null> {
+    await delay(300)
+    const characters = characterStore.get(projectId) || []
+    const index = characters.findIndex((c) => c.id === characterId)
+    if (index === -1) return null
+
+    characters[index] = { ...characters[index], ...updates, updatedAt: new Date() }
+    characterStore.set(projectId, characters)
+    return characters[index]
+  },
+
+  // Update scene
+  async updateScene(projectId: string, sceneId: string, updates: Partial<Scene>): Promise<Scene | null> {
+    await delay(300)
+    const scenes = sceneStore.get(projectId) || []
+    const index = scenes.findIndex((s) => s.id === sceneId)
+    if (index === -1) return null
+
+    scenes[index] = { ...scenes[index], ...updates, updatedAt: new Date() }
+    sceneStore.set(projectId, scenes)
+    return scenes[index]
+  },
+
+  // Re-extract characters with custom prompt
+  async reExtractCharacters(
+    projectId: string,
+    text: string,
+    stylePreset: ArtStylePreset,
+    customPrompt?: string
+  ): Promise<CharacterExtractionResult[]> {
+    await delay(3000)
+
+    // Use custom prompt if provided
+    if (customPrompt) {
+      // In real implementation, this would use the custom prompt
+      console.log("Using custom prompt:", customPrompt)
+    }
+
+    return mockExtractCharacters(text, stylePreset)
+  },
+
+  // Cancel workflow
+  async cancel(projectId: string): Promise<void> {
+    await delay(500)
+    const status = autoWorkflowStore.get(projectId)
+    if (status && status.currentStep !== "completed" && status.currentStep !== "failed") {
+      status.currentStep = "failed"
+      status.errorMessage = "用户取消"
+      status.updatedAt = new Date()
+    }
+  },
+
+  // Reset workflow
+  async reset(projectId: string): Promise<void> {
+    await delay(300)
+    characterStore.delete(projectId)
+    chapterStore.delete(projectId)
+    sceneStore.delete(projectId)
+    sceneCharacterStore.delete(projectId)
+    autoWorkflowStore.delete(projectId)
+  },
 }

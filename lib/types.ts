@@ -163,18 +163,51 @@ export interface Project {
 }
 
 // Character - New model for character management
-export type CharacterRole = "protagonist" | "supporting" | "antagonist" | "narrator" | "other"
+export type CharacterRole = "protagonist" | "supporting" | "antagonist" | "narrator" | "mentor" | "other"
 
+// Base Character interface
 export interface Character {
   id: string
   projectId: string
+  userId: string
   name: string
   role: CharacterRole
-  description: string        // 外观、年龄、发型、服装、气质、关键特征
-  appearancePrompt: string   // 用于图像生成的 appearance prompt
-  referenceImageId?: string  // 关联生成的角色图
+  description: string
+  avatar?: string
+  isMain: boolean
+  appearancePrompt?: string
+  referenceImageId?: string
   createdAt: Date
   updatedAt: Date
+}
+
+// Detailed character attributes for AI extraction
+export interface CharacterAttributes {
+  gender?: string      // 性别
+  age?: string         // 年龄
+  identity?: string    // 身份/职业
+  personality?: string // 个性特征
+  appearance?: string  // 外貌特征
+  clothing?: string    // 服装打扮
+  language?: string    // 语言风格
+  habits?: string      // 行为习惯
+  abilities?: string   // 特殊能力
+  background?: string  // 背景故事
+}
+
+// Auto-generated character with full attributes
+export interface CharacterDetail extends Character {
+  // Detailed attributes extracted by LLM
+  attributes: CharacterAttributes
+  // Auto-generated image prompts
+  appearancePrompt: string   // 外观描述，用于图像生成
+  stylePrompt?: string       // 风格相关 prompt
+  // Scene references - which scenes this character appears in
+  sceneIds: string[]
+  // Confidence score from LLM extraction
+  confidence: number
+  // Source text excerpts where character is mentioned
+  sourceExcerpts: string[]
 }
 
 // Chapter - Extended with orderIndex for reordering
@@ -271,6 +304,74 @@ export interface BatchJobItem {
   lastError?: string
   createdAt: Date
   updatedAt: Date
+}
+
+// ==================== AUTO-WORKFLOW FOR v0.1.1 ====================
+
+// Auto-workflow status tracking
+export type AutoWorkflowStep =
+  | "idle"
+  | "extracting_characters"
+  | "splitting_chapters"
+  | "splitting_scenes"
+  | "linking_characters"
+  | "generating_prompts"
+  | "completed"
+  | "failed"
+
+export interface AutoWorkflowStatus {
+  id: string
+  projectId: string
+  currentStep: AutoWorkflowStep
+  progress: number          // 0-100 overall progress
+  stepProgress: number      // 0-100 current step progress
+  totalCharacters: number
+  processedCharacters: number
+  totalChapters: number
+  processedChapters: number
+  totalScenes: number
+  processedScenes: number
+  characterLinksCreated: number
+  errorMessage?: string
+  startedAt: Date
+  updatedAt: Date
+  completedAt?: Date
+}
+
+// LLM extraction result for characters
+export interface CharacterExtractionResult {
+  name: string
+  role: CharacterRole
+  confidence: number
+  attributes: CharacterAttributes
+  appearancePrompt: string
+  stylePrompt: string
+  sourceExcerpts: string[]
+}
+
+// Chapter split result
+export interface ChapterSplitResult {
+  title: string
+  content: string
+  summary: string
+  wordCount: number
+}
+
+// Scene split result
+export interface SceneSplitResult {
+  title: string
+  excerpt: string
+  characters: string[]  // Character names appearing in this scene
+  promptDraft: string
+}
+
+// Scene-character mapping for auto-linking
+export interface SceneCharacterMapping {
+  sceneId: string
+  sceneTitle: string
+  characterIds: string[]
+  confidence: number
+  reason: string
 }
 
 // ==================== LLM SETTINGS FOR v0.1.1 ====================

@@ -49,6 +49,7 @@ export function CharacterCard({
     supporting: "bg-green-100 text-green-700",
     antagonist: "bg-red-100 text-red-700",
     narrator: "bg-purple-100 text-purple-700",
+    mentor: "bg-amber-100 text-amber-700",
     other: "bg-gray-100 text-gray-700",
   }
 
@@ -73,6 +74,7 @@ export function CharacterCard({
             {character.role === "supporting" && "配角"}
             {character.role === "antagonist" && "反派"}
             {character.role === "narrator" && "旁白"}
+            {character.role === "mentor" && "导师"}
             {character.role === "other" && "其他"}
           </Badge>
         </div>

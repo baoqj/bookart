@@ -3,7 +3,16 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ArrowLeft, BookOpen, ImageIcon, Users, Settings } from "lucide-react"
+import {
+  ArrowLeft,
+  BookOpen,
+  ImageIcon,
+  Users,
+  Settings,
+  ListOrdered,
+  Layers,
+  Zap
+} from "lucide-react"
 import { useI18n } from "@/lib/i18n"
 
 export default function ProjectDetailPage({ params }: { params: { projectId: string } }) {
@@ -67,6 +76,34 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
           </Card>
         </Link>
 
+        <Link href={`/projects/${params.projectId}/chapters`}>
+          <Card className="hover:border-primary transition-colors cursor-pointer h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ListOrdered className="h-5 w-5" />
+                章节管理
+              </CardTitle>
+              <CardDescription>
+                切分和组织章节，支持拖拽排序
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href={`/projects/${params.projectId}/scenes`}>
+          <Card className="hover:border-primary transition-colors cursor-pointer h-full">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Layers className="h-5 w-5" />
+                场景管理
+              </CardTitle>
+              <CardDescription>
+                切分和组织场景，选择角色
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
         <Link href={`/projects/${params.projectId}/illustrations`}>
           <Card className="hover:border-primary transition-colors cursor-pointer h-full">
             <CardHeader>
@@ -76,6 +113,20 @@ export default function ProjectDetailPage({ params }: { params: { projectId: str
               </CardTitle>
               <CardDescription>
                 {t("generateIllustrations")}
+              </CardDescription>
+            </CardHeader>
+          </Card>
+        </Link>
+
+        <Link href={`/projects/${params.projectId}/batch`}>
+          <Card className="hover:border-primary transition-colors cursor-pointer h-full bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-amber-700">
+                <Zap className="h-5 w-5" />
+                批量处理
+              </CardTitle>
+              <CardDescription className="text-amber-600">
+                一键生成全书插画
               </CardDescription>
             </CardHeader>
           </Card>
